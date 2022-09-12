@@ -1,11 +1,15 @@
-// SPDX-License-Identifier: BUSL-1
+ // SPDX-License-Identifier: BUSL-1
 
 pragma solidity =0.8.7;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
 
-contract Bank is ERC20 {
-
+contract Bank is ERC20 { 
+    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) {
+        _mint(msg.sender, 10000);
+    } 
+    event SENDER(address);
+    
     uint256 B_rate = 11;
     uint256 D_rate = 6 ;
 
@@ -19,7 +23,8 @@ contract Bank is ERC20 {
 
     function deposit(uint256 _amount) external {
         userBalance [msg.sender] = _amount;
-        transferFrom( msg.sender, address(this), _amount);
+        transfer( address(this), _amount);
+        emit SENDER(address(this));
     }
 
     function Lend(uint256 _amount) external {
