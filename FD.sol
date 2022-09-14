@@ -18,16 +18,16 @@ contract Bank is ERC20 {
        uint256 lastTime;
    }
 
-    mapping (address => uint256) public userBalance;
     mapping (address => Data) public calc;
 
     function deposit(uint256 _amount) external {
-        userBalance [msg.sender] = _amount;
+        
         transfer( address(this), _amount);
-        emit SENDER(address(this));
+        // emit SENDER(address(this));
     }
 
     function Lend(uint256 _amount) external {
+        _transfer(address(this), msg.sender, _amount);
 
     }
 }
