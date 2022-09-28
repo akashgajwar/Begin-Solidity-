@@ -11,44 +11,57 @@ contract Bank is ERC20 {
     } 
     event SENDER(address);
     
-    uint256 B_rate = 11;
-    uint256 D_rate = 6 ; 
+    uint256 rate = 6 ; 
 
-  
-    mapping (address => uint) public Data;
+    mapping (address => Record) public Data;
 
     struct Record {
        uint256 amount;
        uint256 lastTime;
     }
-
-    Record[] public datas; 
+// Deposit//
 
     function deposit(uint256 _amount) external {
         
         transfer( address(this), _amount);
 
-        Record memory dataa;
-        dataa.amount = _amount;
-        dataa.lastTime = block.timestamp;
+        Data[msg.sender] = Record(_amount, block.timestamp);
 
-        //  function create (address _add) public {
-        //     datas.push(Data(_amount, block.timestamp));
-        // }
-
-        //  Data ({
-        //         amount : _amount,
-        //         lastTime : block.timestamp
-        //     });
     }      
-           
-                      
-    function Lend(uint256 _amount) external {
-        _transfer(address(this), msg.sender, _amount);
 
+ //withdraw// scale it for multiple people , person can withdraw any amout but it should be less than its deposit+interest, set amount, timestamp in struct after withdaral, 
+//  add events in contract //
+
+    function withdraw () public returns(uint256) {
+        
+        uint256 total = calc();
+        uint256 balanceOfBank = balanceOf(address(this));
+
+        if (balanceOfBank >=total){
+            _transfer(address(this), msg.sender, total);
+        }else{
+            _mint(msg.sender, total - balanceOfBank);
+            _transfer(address(this), msg.sender, balanceOfBank);
+        }
+        
+        
+        Data[msg.sender].amount = 0;    
+
+        return total;
     }
 
-    function  calc(address _add)public{
+// Interest calculation//
+
+    function  calc() public view returns(uint _total){
+
+        uint P = Data[msg.sender].amount;
+        uint T= (block.timestamp - (Data[msg.sender].lastTime)/1 seconds);
+        
+        uint SI = (P*T*rate)/100;
+
+        uint total = P + SI;
+
+        return total;
 
     }
 }
