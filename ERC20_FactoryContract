@@ -1,0 +1,41 @@
+pragma solidity ^0.8;
+
+contract AccessControl{
+
+    // Mappings :
+    mapping(bytes32 => mapping(address=>bool)) public roles;        // role => account => bool;
+
+    // Roles :
+    bytes32 private constant FeeManager = keccak256(abi.encodePacked("FeeManager"));
+    bytes32 private constant RefManager = keccak256(abi.encodePacked("RefManager"));
+
+    // Events :
+    event GrantRole(bytes32 indexed role, address indexed account);
+    event RevokeRole(bytes32 indexed role, address indexed account);
+
+    // Connstructor : 
+        constructor(){
+            _grantRole(FeeManager, msg.sender);
+        }
+
+    // Modifier : 
+        modifier checkRole(bytes32 _role){
+            require(roles[_role][msg.sender], "Not authorised");
+            _;
+        }
+
+    // Functions :
+
+    function _grantRole(bytes32 _role, address _account) internal {
+        roles[_role][_account] = true;
+        emit GrantRole(_role, _account);
+    }
+
+    function grantRole(bytes32 _role, address _account) external checkRole(FeeManager){
+        _grantRole(_role, _account);
+    }
+
+    
+
+
+}
